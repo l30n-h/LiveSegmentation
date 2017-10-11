@@ -38,7 +38,7 @@ Classifier::Classifier(const std::string& model_file,
 }
 
 std::pair<cv::Mat, cv::Mat> Classifier::Classify(const std::vector<cv::Mat> predictions) {
-	CHECK(predictions.size()>0) << "Classification failed";
+	if(predictions.size()<=0) return std::pair<cv::Mat, cv::Mat>();
 	size_t rows = predictions[0].rows;
 	size_t cols = predictions[0].cols;
 	cv::Mat maxClass (rows, cols, CV_8UC1);

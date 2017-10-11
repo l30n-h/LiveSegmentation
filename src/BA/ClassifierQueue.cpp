@@ -22,17 +22,21 @@ ClassifierQueue::getClassifier()
 void
 ClassifierQueue::start()
 {
-	isRunning = true;
-	workerThread = std::make_unique<std::thread>(&ClassifierQueue::ClassifierQueue::run, this);
+	if(!isRunning){
+		isRunning = true;
+		workerThread = std::make_unique<std::thread>(&ClassifierQueue::ClassifierQueue::run, this);
+	}
 }
 
 
 void
 ClassifierQueue::stop()
 {
-	isRunning = false;
-	conditionVariable.notify_all();
-	workerThread->join();
+	if(isRunning){
+		isRunning = false;
+		conditionVariable.notify_all();
+		workerThread->join();
+	}
 }
 
 
@@ -73,8 +77,8 @@ ClassifierQueue::add(Image image, Consumer consumer)
 			list.pop_back();
 		}
 		list.push_back(std::make_pair(image, consumer));
-		conditionVariable.notify_one();
 	}
+	conditionVariable.notify_one();
 	if(isDeleted) {
 		pair.second(std::vector<Image>());
 	}

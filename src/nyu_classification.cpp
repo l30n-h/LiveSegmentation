@@ -13,6 +13,8 @@
 #include <utility>
 #include <vector>
 #include <ctime>
+#include <thread>
+#include <chrono>
 
 #ifdef USE_OPENCV
 
@@ -59,14 +61,21 @@ static std::vector<std::string> getLabelsFromFile(const std::string& label_file)
 static void printWithTime(std::string msg){
 	time_t t = time(0);
 	struct tm * now = localtime( & t );
-	std::cout << "["<< now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec << "]\t" << msg << std::endl;
+	std::cout << "[";
+	if(now->tm_hour<10) std::cout << "0";
+	std::cout << now->tm_hour << ":";
+	if(now->tm_min<10) std::cout << "0";
+	std::cout << now->tm_min << ":";
+	if(now->tm_sec<10) std::cout << "0";
+	std::cout << now->tm_sec << "]\t";
+	std::cout << msg << std::endl;
 }
 
 int main(int argc, char** argv) {
-	if (argc != 7) {
+	if (argc < 7) {
 		std::cerr << "Usage: " << argv[0]
 					<< " deploy.prototxt network.caffemodel"
-					<< " mean.binaryproto labels.txt img.jpg" << std::endl;
+					<< " mean_b mean_g mean_r img1.jpg [img2.jpg ...]" << std::endl;
 		return 1;
 	}
 
@@ -78,16 +87,41 @@ int main(int argc, char** argv) {
 	float mean_g = (float)std::atof(argv[4]);
 	float mean_r = (float)std::atof(argv[5]);
 	Classifier classifier(model_file, trained_file, cv::Scalar(mean_b, mean_g, mean_r), std::vector<std::string>());
-
-	std::string file = argv[6];
-
-	std::cout << "---------- Classification for "
-				<< file << " ----------" << std::endl;
-
-	cv::Mat img = cv::imread(file, -1);
-	CHECK(!img.empty()) << "Unable to decode image " << file;
+	ClassifierQueue classifierQueue(classifier);
+	classifierQueue.start();
 	
 	printWithTime("Prediction started");
+	int isDone = argc-6;
+	for(int i=6;i<argc;i++){
+		std::string file = argv[i];
+		printWithTime("Read image "+file);
+		cv::Mat img = cv::imread(file, -1);
+		CHECK(!img.empty()) << "Unable to decode image " << file;
+	
+		
+		classifierQueue.add(img, [&classifierQueue, &isDone, &argc, i](std::vector<cv::Mat> predictions) mutable {
+			std::string num = std::to_string(i-5);
+			if(predictions.empty()){
+				printWithTime("Prediction skipped for "+num);
+			} else{
+				printWithTime("Prediction done for "+num);
+				printWithTime("Classification started");
+				std::pair<cv::Mat, cv::Mat> result = classifierQueue.getClassifier().Classify(predictions);
+				printWithTime("Classification done");
+				cv::imwrite( "./Classes"+num+".png", result.first );
+				cv::imwrite( "./Probs"+num+".png", result.second );
+			}
+			isDone--;
+		});
+	}
+	while(isDone>0){
+		printWithTime("Still predicting");
+		std::this_thread::sleep_for(std::chrono::seconds(10));
+	}
+	classifierQueue.stop();
+	printWithTime("Done");
+
+	/*printWithTime("Prediction started");
 	std::vector<cv::Mat> predictions = classifier.Predict(img);
 	printWithTime("Prediction done");
 	printWithTime("Classification started");
@@ -95,8 +129,8 @@ int main(int argc, char** argv) {
 	printWithTime("Classification done");
 	cv::imwrite( "./Classes.png", result.first );
 	cv::imwrite( "./Probs.png", result.second );
-	
 	printWithTime("Done");
+	*/
 }
 #else
 int main(int argc, char** argv) {
