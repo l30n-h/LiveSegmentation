@@ -1,24 +1,33 @@
-Install caffe via docker:
+#Install caffe via docker:
+```bash
 sudo docker build --memory=2g --memory-swap=-1 -t caffe:cpu .
+```
 
-Start caffe via docker:
+#Start caffe via docker:
+```bash
 sudo docker run --rm -it -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) --memory=2g --memory-swap=-1 caffe:cpu bash
+```
 
-Install src:
+#Install src:
+```bash
 cd src && cmake . && make && cd ..
+```
 
-Used Models:
+#Used Models:
 https://github.com/shelhamer/fcn.berkeleyvision.org
 
-Pretrained caffemodel:
+#Pretrained caffemodel:
 http://dl.caffe.berkeleyvision.org/nyud-fcn32s-color-heavy.caffemodel
 
-Test (c++):
+#Test (c++):
+```bash
 src/nyu_classification models/deploy.prototxt models/pretrained.caffemodel "116.190" "97.203" "92.318" data/cafe1a.ppm
+```
 
-Test (ipython):
+#Test (ipython):
 ipython
 
+```python
 import numpy as np
 from PIL import Image
 import caffe
@@ -46,3 +55,4 @@ Image.fromarray((out['loss'][0].argmax(axis=0)).astype('uint8')).save('class.png
 Image.fromarray((out['loss'][0].max(axis=0)*100).astype('uint8')).save('prob.png')
 
 quit()
+```
