@@ -41,8 +41,8 @@ std::pair<cv::Mat, cv::Mat> Classifier::Classify(const std::vector<cv::Mat> pred
 	if(predictions.size()<=0) return std::pair<cv::Mat, cv::Mat>();
 	size_t rows = predictions[0].rows;
 	size_t cols = predictions[0].cols;
-	cv::Mat maxClass (rows, cols, CV_8UC1);
-	cv::Mat maxProb (rows, cols, CV_8UC1);
+	cv::Mat maxClass = cv::Mat::zeros(rows, cols, CV_8UC1);
+	cv::Mat maxProb = cv::Mat::zeros(rows, cols, CV_8UC1);
 	for (size_t i = 0; i < predictions.size(); ++i){
 		cv::Mat oi = predictions[i];
 		if(oi.rows>=0 && oi.cols>=0 && ((unsigned)oi.rows)==rows && ((unsigned)oi.cols)==cols){
@@ -60,7 +60,7 @@ std::pair<cv::Mat, cv::Mat> Classifier::Classify(const std::vector<cv::Mat> pred
 	return std::make_pair(maxClass, maxProb);
 }
 
-std::vector<cv::Mat> Classifier::Predict(const cv::Mat& img) {
+std::vector<cv::Mat> Classifier::Predict(const cv::Mat& img) {	
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	input_layer->Reshape(1, num_channels_, input_geometry_.height, input_geometry_.width);
 	/* Forward dimension change to all layers. */
@@ -70,7 +70,7 @@ std::vector<cv::Mat> Classifier::Predict(const cv::Mat& img) {
 	WrapLayer(net_->input_blobs()[0], &input_channels);
 
 	Preprocess(img, &input_channels);
-
+	
 	net_->Forward();	
 
 	std::vector<cv::Mat> output_channels;

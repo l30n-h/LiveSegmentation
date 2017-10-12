@@ -10,7 +10,7 @@ sudo docker run --rm -it -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) --memor
 
 # Install src:
 ```bash
-cd src && cmake . && make && cd ..
+cd src && cmake . && make ; cd ..
 ```
 
 # Used Models:
