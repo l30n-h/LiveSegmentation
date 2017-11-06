@@ -1,18 +1,19 @@
-#include "Prediction.hpp"
+#include "Probabilities.hpp"
 
 #include <thrust/reduce.h>
+#include <thrust/sort.h>
 
 //namespace ba {
 
 __host__ __device__
-Prediction::Prediction()
+Probabilities::Probabilities()
 {
 
 }
 
 __host__ __device__
-Prediction::Prediction(const Prediction& p)
-	: prediction(p) 
+Probabilities::Probabilities(const Probabilities& p)
+	: probabilities(p) 
 {
 
 }
@@ -22,18 +23,25 @@ calcProbabilty(float lastProb, float newProb){
 	return oldProb + alpha*(prob-oldProb);
 }
 
+struct sortByLabel {
+  __host__ __device__
+  bool operator()(const LPPair& p1, const LPPair& p2) {
+      return p1.first < p2.first;
+  }
+};
+
 __device__ __host__
-void update(const Prediction& p)
+void update(const Probabilities& p)
 {
-	Vector::iterator end1 = prediction.end();
-    Vector::iterator i2 = p.begin();
+	Vector::iterator end1 = probabilities.end();
+	Vector::iterator i2 = p.begin();
 	Vector::iterator end2 = p.end();
 	for(; i1 != end1; ++i1) {
 		LPPair p1 = (*l1);
 		while(i2 != end2) {
 			LPPair p2 = (*i2);
 			if(p1.label<=p2.label) break;
-			prediction.append(p2);
+			probabilities.append(p2);
 			++i2
 		}
 		prob2 = 0;
@@ -44,10 +52,10 @@ void update(const Prediction& p)
 		
 	}
 	for(; i2 != end2; ++i2) {
-		prediction.append((*i2));
+		probabilities.append((*i2));
 	}
-	if(prediction.end() != end1){
-		//sort
+	if(probabilities.end() != end1){
+		thrust::sort(probabilities.begin(), probabilities.end(), sortByLabel());//TODO sort in O(n)
 	}
 }
 
@@ -61,7 +69,7 @@ struct maxByProbabilty {
 __device__ __host__
 LPPair getMax()
 {
-	return thrust::reduce(prediction.begin(), prediction.end(), LPPair(0,0), maxByProbabilty());
+	return thrust::reduce(probabilities.begin(), probabilities.end(), LPPair(0,0), maxByProbabilty());
 }
 
 //} // namespace

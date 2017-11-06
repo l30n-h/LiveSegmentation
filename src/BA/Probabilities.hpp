@@ -1,5 +1,5 @@
-#ifndef BA_Prediction_H
-#define BA_Prediction_H
+#ifndef BA_Probabilities_H
+#define BA_Probabilities_H
 
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
@@ -13,24 +13,24 @@ template <typename T> using Vector = thrust::device_vector< T >;
 template <typename T> using Vector = thrust::host_vector<   T >;
 #endif
 
-class Prediction
+class Probabilities
 {
 	public:
 
 		__host__ __device__
-		Prediction();
+		Probabilities();
 
 		__host__ __device__
-		Prediction(const Prediction& p);
+		Probabilities(const Probabilities& p);
 		
 		__device__ __host__
-		void update(const Prediction& p);
+		void update(const Probabilities& p);
 
 		__device__ __host__
 		LPPair getMax();
 
 	private:
-		Vector<LPPair> prediction;
+		Vector<LPPair> probabilities;
 };
 
-#endif // BA_Prediction_H
+#endif // BA_Probabilities_H
