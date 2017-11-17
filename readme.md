@@ -1,6 +1,32 @@
+# Install nvidia-docker:
+```bash
+docker volume ls -q -f driver=nvidia-docker | xargs -r -I{} -n1 docker ps -q -a -f volume={} | xargs -r docker rm -f
+sudo apt-get purge nvidia-docker
+
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | \
+  sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/ubuntu16.04/amd64/nvidia-docker.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt-get update
+
+sudo apt-get install nvidia-docker2
+sudo pkill -SIGHUP dockerd
+
+sudo docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
+```
+
 # Install caffe via docker:
 ```bash
 sudo docker build --memory=2g --memory-swap=-1 -t caffe:cpu .
+```
+
+# Error handling:
+```bash
+sudo nano /etc/NetworkManager/NetworkManager.conf
+#dns=dnsmasq
+sudo systemctl restart network-manager
+
+DOCKER_OPTS="--dns 208.67.222.222 --dns 208.67.220.220"
 ```
 
 # Start caffe via docker:
