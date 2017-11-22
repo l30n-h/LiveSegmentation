@@ -53,6 +53,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	libglew-dev && \
     rm -rf /var/lib/apt/lists/*
 
+#TODO keyboard-configuration disable interactive mode
+RUN apt-get update && apt-get install --no-install-recommends -y mesa-utils nvidia-384 lightdm- libcuda1-384- nvidia-opencl-icd-384-
 # Replace 1000 with your user / group id
 RUN export uid=1000 gid=1000 && \
     mkdir -p /home/developer && \
