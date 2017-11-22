@@ -32,6 +32,8 @@ DOCKER_OPTS="--dns 208.67.222.222 --dns 208.67.220.220"
 # Start caffe via docker:
 ```bash
 sudo docker run --rm -it -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) --memory=2g --memory-swap=-1 caffe:cpu bash
+
+sudo nvidia-docker run --rm -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix:rw -v $(pwd):$(pwd) -w $(pwd) caffe:gpu bash
 ```
 
 # Install src:
@@ -47,7 +49,7 @@ http://dl.caffe.berkeleyvision.org/nyud-fcn32s-color-heavy.caffemodel
 
 # Test (c++):
 ```bash
-src/nyu_classification models/deploy.prototxt models/pretrained.caffemodel "116.190" "97.203" "92.318" data/cafe1a.ppm
+src/nyu_classification force_gpu models/deploy.prototxt models/pretrained.caffemodel "116.190" "97.203" "92.318" data/cafe1a.ppm
 ```
 
 # Test (ipython):

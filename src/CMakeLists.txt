@@ -7,6 +7,7 @@ set(Caffe_DIR "/opt/caffe/build")
 
 #set(Caffe_INCLUDE_DIRS "/opt/caffe/build/install/include" "/opt/caffe/include")
 set(Caffe_INCLUDE_DIRS "/opt/caffe/build/install/include")
+set(Caffe_INCLUDE_DIRS "/opt/caffe/build/include")
 #set(Caffe_LIBRARIES "/opt/caffe/build/install/lib/libcaffe.so")
 
 find_package( OpenCV REQUIRED )

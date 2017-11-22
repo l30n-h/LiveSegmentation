@@ -44,4 +44,23 @@ ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
+
+#voxelhasher part
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+	libpng12-dev \
+	libglew-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Replace 1000 with your user / group id
+RUN export uid=1000 gid=1000 && \
+    mkdir -p /home/developer && \
+    echo "developer:x:${uid}:${gid}:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
+    echo "developer:x:${uid}:" >> /etc/group && \
+    chown ${uid}:${gid} -R /home/developer
+RUN echo "root:root" | chpasswd
+USER developer
+ENV HOME /home/developer
+
 WORKDIR /workspace

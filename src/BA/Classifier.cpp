@@ -10,11 +10,12 @@ using namespace caffe;  // NOLINT(build/namespaces)
 Classifier::Classifier(const std::string& model_file,
                        const std::string& trained_file,
                        const cv::Scalar mean,
-                       const std::vector<std::string> labels) {
+                       const std::vector<std::string> labels,
+                       const bool force_cpu) {
 #ifdef CPU_ONLY
 	Caffe::set_mode(Caffe::CPU);
 #else
-	Caffe::set_mode(Caffe::GPU);
+	Caffe::set_mode(force_cpu ? Caffe::CPU : Caffe::GPU);
 #endif
 	/* Load the network. */
 	net_.reset(new Net<float>(model_file, TEST));
@@ -58,6 +59,10 @@ std::pair<cv::Mat, cv::Mat> Classifier::Classify(const std::vector<cv::Mat> pred
 		}
 	}
 	return std::make_pair(maxClass, maxProb);
+}
+
+bool Classifier::usesGPU(){
+	return Caffe::mode() == Caffe::GPU;
 }
 
 std::vector<cv::Mat> Classifier::Predict(const cv::Mat& img) {	

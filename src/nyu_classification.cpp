@@ -74,27 +74,28 @@ static void printWithTime(std::string msg){
 int main(int argc, char** argv) {
 	if (argc < 7) {
 		std::cerr << "Usage: " << argv[0]
+					<< " <default|force_cpu>"
 					<< " deploy.prototxt network.caffemodel"
 					<< " mean_b mean_g mean_r img1.jpg [img2.jpg ...]" << std::endl;
 		return 1;
 	}
 
 	::google::InitGoogleLogging(argv[0]);
-
-	std::string model_file   = argv[1];
-	std::string trained_file = argv[2];
-	float mean_b = (float)std::atof(argv[3]);
-	float mean_g = (float)std::atof(argv[4]);
-	float mean_r = (float)std::atof(argv[5]);
-	Classifier classifier(model_file, trained_file, cv::Scalar(mean_b, mean_g, mean_r), std::vector<std::string>());
-
+	bool force_cpu = "force_cpu" == std::string(argv[1]);
+	std::string model_file   = argv[2];
+	std::string trained_file = argv[3];
+	float mean_b = (float)std::atof(argv[4]);
+	float mean_g = (float)std::atof(argv[5]);
+	float mean_r = (float)std::atof(argv[6]);
+	Classifier classifier(model_file, trained_file, cv::Scalar(mean_b, mean_g, mean_r), std::vector<std::string>(), force_cpu);
+	printWithTime(classifier.usesGPU()?"Runs on GPU":"Runs on CPU");
 		
 	ClassifierQueue classifierQueue(classifier);
 	classifierQueue.start();
 	
 	printWithTime("Prediction started");
-	int isDone = argc-6;
-	for(int i=6;i<argc;i++){
+	int isDone = argc-7;
+	for(int i=7;i<argc;i++){
 		std::string file = argv[i];
 		printWithTime("Read image "+file);
 		cv::Mat img = cv::imread(file, -1);
@@ -102,7 +103,7 @@ int main(int argc, char** argv) {
 	
 		
 		classifierQueue.add(img, [&classifierQueue, &isDone, &argc, i](std::vector<cv::Mat> predictions) mutable {
-			std::string num = std::to_string(i-5);
+			std::string num = std::to_string(i-6);
 			if(predictions.empty()){
 				printWithTime("Prediction skipped for "+num);
 			} else{

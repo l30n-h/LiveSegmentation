@@ -14,7 +14,10 @@ class Classifier {
 		Classifier(const std::string& model_file,
 					const std::string& trained_file,
 					const cv::Scalar mean,
-					const std::vector<std::string> labels);
+					const std::vector<std::string> labels,
+                                        const bool force_cpu=false);
+
+		bool usesGPU();
 
 		std::vector<cv::Mat> Predict(const cv::Mat& img);		
 
