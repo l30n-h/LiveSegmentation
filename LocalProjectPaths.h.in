@@ -1,0 +1,30 @@
+//----------------------------------------------------------------------------//
+//                               INCLUDE GUARD                                //
+//----------------------------------------------------------------------------//
+#ifndef LOCAL_PROJECT_PATHS_H
+#define LOCAL_PROJECT_PATHS_H
+
+//----------------------------------------------------------------------------//
+//                      FORWARD DECLARATION DEPENDENCIES                      //
+//----------------------------------------------------------------------------//
+
+
+//----------------------------------------------------------------------------//
+//                           INCLUDED DEPENDENCIES                            //
+//----------------------------------------------------------------------------//
+//    --- COMMON ---
+
+
+//    --- PROJECT ---
+#include <string>
+
+
+
+const std::string PROJECT_ROOT_DIRECTORY            = "@PROJECT_ROOT_DIR@/";
+
+const std::string PROJECT_RECONSTRUCTIONS_DIRECTORY = "@LOCAL_RECONSTRUCTIONS_DIRECTORY@/";
+const std::string PROJECT_LOG_DIRECTORY             = "@LOCAL_LOG_DIRECTORY@/";
+
+
+
+#endif // LOCAL_PROJECT_PATHS_H

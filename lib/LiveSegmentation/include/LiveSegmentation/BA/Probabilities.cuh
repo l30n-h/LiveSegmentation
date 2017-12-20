@@ -1,10 +1,12 @@
-#ifndef BA_Probabilities_H
-#define BA_Probabilities_H
+#ifndef LIVESEGMENTATION_PROBABILITIES_H
+#define LIVESEGMENTATION_PROBABILITIES_H
 
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 
 #include <VoxelHasher/Core/HostDeviceObject.cuh>
+
+namespace ls {
 
 using LPPair = thrust::pair<unsigned int, float>;
 #ifdef __CUDA_ARCH__
@@ -33,4 +35,5 @@ class Probabilities
 		Vector<LPPair> probabilities;
 };
 
-#endif // BA_Probabilities_H
+}
+#endif // LIVESEGMENTATION_PROBABILITIES_H

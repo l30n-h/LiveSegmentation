@@ -38,7 +38,8 @@ sudo nvidia-docker run --rm -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-
 
 # Install src:
 ```bash
-cd src && cmake . && make ; cd ..
+sh setup.sh
+sh build.sh
 ```
 
 # Used Models:
@@ -49,7 +50,7 @@ http://dl.caffe.berkeleyvision.org/nyud-fcn32s-color-heavy.caffemodel
 
 # Test (c++):
 ```bash
-src/nyu_classification force_gpu models/deploy.prototxt models/pretrained.caffemodel "116.190" "97.203" "92.318" data/cafe1a.ppm
+./bin/nyu_classification force_gpu data/models/deploy.prototxt data/models/pretrained.caffemodel "116.190" "97.203" "92.318" data/images/cafe1a.ppm
 ```
 
 # Test (ipython):

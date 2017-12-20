@@ -1,9 +1,9 @@
-#include "Probabilities.hpp"
+#include "LiveSegmentation/BA/Probabilities.hpp"
 
 #include <thrust/reduce.h>
 #include <thrust/sort.h>
 
-//namespace ba {
+namespace ls {
 
 __host__ __device__
 Probabilities::Probabilities()
@@ -72,4 +72,4 @@ LPPair getMax()
 	return thrust::reduce(probabilities.begin(), probabilities.end(), LPPair(0,0), maxByProbabilty());
 }
 
-//} // namespace
+}
