@@ -47,7 +47,29 @@ int main(int argc, char** argv) {
 	float mean_r = (float)std::atof(argv[6]);
 	Classifier classifier(model_file, trained_file, cv::Scalar(mean_b, mean_g, mean_r), std::vector<std::string>(), force_cpu);
 	printWithTime(classifier.usesGPU()?"Runs on GPU":"Runs on CPU");
+	
+	printWithTime("Prediction started");
+	for(int i=7;i<argc;i++){		
+		std::string file = argv[i];
+		printWithTime("Read image "+file);
+		cv::Mat img = cv::imread(file, -1);
+		if(img.empty()){
+			std::cerr << "Unable to decode image " << file;
+			continue;
+		}
 		
+		std::vector<cv::Mat> predictions = classifier.Predict(img);
+		printWithTime("Prediction done");
+		printWithTime("Classification started");
+		std::pair<cv::Mat, cv::Mat> result = classifier.Classify(predictions);
+		printWithTime("Classification done");
+		cv::imwrite( "./ClassesNQ.png", result.first );
+		cv::imwrite( "./ProbsNQ.png", result.second );
+		
+	}
+	printWithTime("Done");
+
+
 	ClassifierQueue classifierQueue(classifier);
 	classifierQueue.start();
 	
@@ -83,28 +105,5 @@ int main(int argc, char** argv) {
 	}
 	classifierQueue.stop();
 	printWithTime("Done");
-
-	/*
-	Classifier classifier(model_file, trained_file, cv::Scalar(mean_b, mean_g, mean_r), std::vector<std::string>());
-	printWithTime("Prediction started");
-	for(int i=6;i<argc;i++){		
-		std::string file = argv[i];
-		printWithTime("Read image "+file);
-		cv::Mat img = cv::imread(file, -1);
-		if(img.empty()){
-			std::cerr << "Unable to decode image " << file;
-			continue;
-		}
-		
-		std::vector<cv::Mat> predictions = classifier.Predict(img);
-		printWithTime("Prediction done");
-		printWithTime("Classification started");
-		std::pair<cv::Mat, cv::Mat> result = classifier.Classify(predictions);
-		printWithTime("Classification done");
-		cv::imwrite( "./Classes.png", result.first );
-		cv::imwrite( "./Probs.png", result.second );
-		
-	}
-	printWithTime("Done");*/
 }
 

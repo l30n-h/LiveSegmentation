@@ -42,7 +42,7 @@ message(STATUS "Added custom module path : ${CMAKE_MODULE_PATH}")
 
 
 # Find CUDA beforehand
-find_package(CUDA 8.0 )
+#find_package(CUDA 8.0 )
 
 
 
@@ -76,9 +76,8 @@ message(STATUS "Created device flags : ${DEVICE_FLAGS}")
 # Host flags (.cpp files)
 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 
-list(APPEND HOST_FLAGS "-std=c++14")
+list(APPEND HOST_FLAGS "-std=c++11")
 list(APPEND HOST_FLAGS "-Wall")
-list(APPEND HOST_FLAGS "-fPIC")
 #list(APPEND HOST_FLAGS "-pedantic")
 #list(APPEND HOST_FLAGS "-Wextra")
 #list(APPEND HOST_FLAGS "-Wconversion")          # Only add this here since thrust has problem with this
