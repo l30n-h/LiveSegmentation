@@ -42,7 +42,7 @@ message(STATUS "Added custom module path : ${CMAKE_MODULE_PATH}")
 
 
 # Find CUDA beforehand
-find_package(CUDA 8.0 REQUIRED)
+find_package(CUDA 8.0 )
 
 
 

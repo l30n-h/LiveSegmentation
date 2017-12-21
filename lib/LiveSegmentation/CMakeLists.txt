@@ -19,8 +19,10 @@ find_package(Caffe REQUIRED)
 get_property(Caffe_INCLUDE_DIRS TARGET caffe PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
 list(APPEND Caffe_INCLUDE_DIRS ${Caffe_DIR}include)
 
-message(STATUS "Caffe_DEFINITIONS")
-message(STATUS ${Caffe_DEFINITIONS})
+get_property(Caffe_COMPILE_DEFINITIONS TARGET caffe PROPERTY INTERFACE_COMPILE_DEFINITIONS)
+
+message(STATUS "Caffe_COMPILE_DEFINITIONS")
+message(STATUS ${Caffe_COMPILE_DEFINITIONS})
 
 message(STATUS "Caffe_INCLUDE_DIRS")
 message(STATUS ${Caffe_INCLUDE_DIRS})
@@ -28,7 +30,7 @@ message(STATUS ${Caffe_INCLUDE_DIRS})
 message(STATUS "Caffe_LIBRARIES")
 message(STATUS ${Caffe_LIBRARIES})
 
-#add_definitions(${Caffe_DEFINITIONS})    # ex. -DCPU_ONLY
+
 
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
@@ -49,6 +51,8 @@ add_library(LiveSegmentation STATIC ${SOURCES})
 
 target_include_directories(LiveSegmentation PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(LiveSegmentation PRIVATE ${Caffe_INCLUDE_DIRS})
+
+target_compile_definitions(LiveSegmentation PUBLIC ${Caffe_COMPILE_DEFINITIONS})
 
 target_link_libraries(LiveSegmentation ${OpenCV_LIBS})
 #target_link_libraries(LiveSegmentation {Caffe_LIBRARIES})
