@@ -136,6 +136,7 @@ ClassifierQueue::Impl::add(Image image, Consumer consumer)
 void
 ClassifierQueue::Impl::run()
 {
+	classifier.updateThreadSpecificSettings();
 	while(isRunning) {
 		std::pair<Image, Consumer> pair;
 		bool isEmpty = true;

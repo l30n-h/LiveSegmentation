@@ -17,6 +17,7 @@ class Classifier::Impl
                        const bool force_cpu);
         ~Impl();
 
+		void updateThreadSpecificSettings();
 		bool usesGPU();
 		std::vector<cv::Mat> Predict(const cv::Mat& img);		
 		std::pair<cv::Mat, cv::Mat> Classify(const std::vector<cv::Mat> predictions);
@@ -28,6 +29,7 @@ class Classifier::Impl
 		int num_channels_;
 		cv::Scalar mean_;
 		std::vector<std::string> labels_;
+		bool force_cpu_ = false;
 };
 
 Classifier::Classifier(const Classifier& op)
@@ -59,6 +61,10 @@ std::pair<cv::Mat, cv::Mat> Classifier::Classify(const std::vector<cv::Mat> pred
 	return impl->Classify(predictions);
 }
 
+void Classifier::updateThreadSpecificSettings(){
+	impl->updateThreadSpecificSettings();
+}
+
 bool Classifier::usesGPU(){
 	return impl->usesGPU();
 }
@@ -73,11 +79,6 @@ Classifier::Impl::Impl(const std::string& model_file,
                        		const cv::Scalar mean,
                        		const std::vector<std::string> labels,
                        		const bool force_cpu){
-#ifdef CPU_ONLY
-	caffe::Caffe::set_mode(caffe::Caffe::CPU);
-#else
-	caffe::Caffe::set_mode(force_cpu ? caffe::Caffe::CPU : caffe::Caffe::GPU);
-#endif
 	/* Load the network. */
 	net_.reset(new caffe::Net<float>(model_file, caffe::TEST));
 	net_->CopyTrainedLayersFrom(trained_file);
@@ -95,11 +96,22 @@ Classifier::Impl::Impl(const std::string& model_file,
 	//Blob<float>* output_layer = net_->output_blobs()[0];
 	//if(labels.size() != output_layer->channels()) throw "Number of labels is different from the output layer dimension.";
 	labels_ = labels;
+
+	updateThreadSpecificSettings();
+	force_cpu_ = force_cpu;
 }
 
 Classifier::Impl::~Impl()
 {
 
+}
+
+void Classifier::Impl::updateThreadSpecificSettings(){
+#ifdef CPU_ONLY
+	caffe::Caffe::set_mode(caffe::Caffe::CPU);
+#else
+	caffe::Caffe::set_mode(force_cpu_ ? caffe::Caffe::CPU : caffe::Caffe::GPU);
+#endif
 }
 
 bool Classifier::Impl::usesGPU(){

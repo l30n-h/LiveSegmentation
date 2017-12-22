@@ -19,12 +19,12 @@ class Classifier {
 		~Classifier();
 
 		Classifier(Classifier && op) noexcept;
-    	Classifier& operator=(Classifier && op) noexcept;
+		Classifier& operator=(Classifier && op) noexcept;
 
-    	Classifier(const Classifier& op);
-    	Classifier& operator=(const Classifier& op);
+		Classifier(const Classifier& op);
+  		Classifier& operator=(const Classifier& op);
 
-
+		void updateThreadSpecificSettings();
 		bool usesGPU();
 		std::vector<cv::Mat> Predict(const cv::Mat& img);		
 		std::pair<cv::Mat, cv::Mat> Classify(const std::vector<cv::Mat> predictions);
