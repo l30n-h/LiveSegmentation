@@ -31,7 +31,7 @@ class Classifier::Impl
 };
 
 Classifier::Classifier(const Classifier& op)
-: impl(new Impl(*op.impl))
+: impl(std::make_unique<Impl>(*op.impl))
 {}
 
 Classifier& Classifier::operator=(const Classifier& op) {
@@ -117,7 +117,7 @@ std::vector<cv::Mat> Classifier::Impl::Predict(const cv::Mat& img) {
 
 	Preprocess(img, &input_channels);
 	
-	net_->Forward();	
+	net_->Forward();
 
 	std::vector<cv::Mat> output_channels;
 	WrapLayer(net_->output_blobs()[0], &output_channels);

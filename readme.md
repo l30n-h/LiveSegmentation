@@ -50,7 +50,7 @@ http://dl.caffe.berkeleyvision.org/nyud-fcn32s-color-heavy.caffemodel
 
 # Test (c++):
 ```bash
-./bin/nyu_classification force_gpu data/models/deploy.prototxt data/models/pretrained.caffemodel "116.190" "97.203" "92.318" data/images/cafe1a.ppm
+GLOG_minloglevel=2 ./bin/nyu_classification force_gpu data/models/deploy.prototxt data/models/pretrained.caffemodel "116.190" "97.203" "92.318" data/images/cafe1a.ppm
 ```
 
 # Test (ipython):

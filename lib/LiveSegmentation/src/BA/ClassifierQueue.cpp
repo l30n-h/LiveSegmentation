@@ -22,7 +22,7 @@ class ClassifierQueue::Impl
 		void run();
 
 		size_t limit = 1;
-		bool isRunning;
+		bool isRunning = false;
 		std::mutex mutex;
 		std::mutex conditionMutex;
 		std::condition_variable conditionVariable;

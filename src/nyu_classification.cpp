@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 
 	ClassifierQueue classifierQueue(classifier);
 	classifierQueue.start();
-	
+
 	printWithTime("Prediction started");
 	int isDone = argc-7;
 	for(int i=7;i<argc;i++){
