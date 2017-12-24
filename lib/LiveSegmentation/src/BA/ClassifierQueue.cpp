@@ -5,7 +5,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include <list>
+#include <deque>
 #include <utility>
 
 namespace ls {
@@ -18,17 +18,19 @@ class ClassifierQueue::Impl
 
 		void start();
 		void stop();
+		void setLimit(size_t limit, bool overwrite);
 		void add(Image image, Consumer consumer);
 		void run();
 
 		size_t limit = 1;
+		bool overwrite = true;
 		bool isRunning = false;
 		std::mutex mutex;
 		std::mutex conditionMutex;
 		std::condition_variable conditionVariable;
 		std::unique_ptr<std::thread> workerThread;
 
-		std::list< std::pair<Image, Consumer> > list;
+		std::deque< std::pair<Image, Consumer> > queue;
 		Classifier classifier;
 };
 /*
@@ -76,6 +78,12 @@ ClassifierQueue::stop()
 }
 
 void
+ClassifierQueue::setLimit(size_t limit, bool overwrite)
+{
+	impl->setLimit(limit, overwrite);
+}
+
+void
 ClassifierQueue::add(Image image, Consumer consumer)
 {
 	impl->add(image, consumer);
@@ -114,23 +122,46 @@ ClassifierQueue::Impl::stop()
 }
 
 void
+ClassifierQueue::Impl::setLimit(size_t pLimit, bool pOverwrite)
+{
+	{	
+		std::lock_guard<std::mutex> guard(mutex);
+		if(pLimit<limit){
+			std::pair<Image, Consumer> pair;
+			while(queue.size()>pLimit){
+				pair = queue.back();
+				queue.pop_back();
+				pair.second(std::vector<Image>());
+			}
+		}
+		limit = pLimit;
+		overwrite=pOverwrite;
+	}
+}
+
+void
 ClassifierQueue::Impl::add(Image image, Consumer consumer)
 {
-	std::pair<Image, Consumer> pair;
-	bool isDeleted = false;	
+	Consumer deletedConsumer;
+	bool isDeleted = false;
+	bool isFull = false;
 	{
 		std::lock_guard<std::mutex> guard(mutex);
-		if(list.size()==limit) {
+		isFull=queue.size()==limit;
+		if(isFull && overwrite) {
+			if(overwrite){
+				deletedConsumer = queue.back().second;
+				queue.pop_back();
+				isFull = false;
+			}else {
+				deletedConsumer = consumer;
+			}
 			isDeleted = true;
-			pair = list.back();
-			list.pop_back();
 		}
-		list.push_back(std::make_pair(image, consumer));
+		if(!isFull) queue.push_back(std::make_pair(image, consumer));
 	}
-	conditionVariable.notify_one();
-	if(isDeleted) {
-		pair.second(std::vector<Image>());
-	}
+	if(!isFull) conditionVariable.notify_one();
+	if(isDeleted) deletedConsumer(std::vector<Image>());
 }
 
 void
@@ -142,10 +173,10 @@ ClassifierQueue::Impl::run()
 		bool isEmpty = true;
 		{
 			std::lock_guard<std::mutex> guard(mutex);
-			if (!list.empty()) {
+			if (!queue.empty()) {
 				isEmpty = false;
-				pair = list.front();
-				list.pop_front();
+				pair = queue.front();
+				queue.pop_front();
 			}
 		}
 		if(isEmpty) {
