@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 	Classifier classifier(model_file, trained_file, cv::Scalar(mean_b, mean_g, mean_r), std::vector<std::string>(), force_cpu);
 	printWithTime(classifier.usesGPU()?"Runs on GPU":"Runs on CPU");
 	
-	/*printWithTime("Prediction started");
+	printWithTime("Prediction started");
 	for(int i=7;i<argc;i++){		
 		std::string file = argv[i];
 		printWithTime("Read image "+file);
@@ -67,12 +67,12 @@ int main(int argc, char** argv) {
 		cv::imwrite( "./ProbsNQ.png", result.second );
 		
 	}
-	printWithTime("Done");*/
+	printWithTime("Done");
 
 
 	ClassifierQueue classifierQueue(classifier);
-	//classifierQueue.start();
-	classifierQueue.setLimit(1, false);
+	classifierQueue.start();
+	classifierQueue.setLimit(1, true);
 
 	printWithTime("Prediction started");
 	int isDone = argc-7;
@@ -84,10 +84,6 @@ int main(int argc, char** argv) {
 			std::cerr << "Unable to decode image " << file;
 			continue;
 		}
-		int mj = 10;
-		double sumj=0;isDone*=mj;
-		for(int j=0;j<mj;j++){
-		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 		classifierQueue.add(img, [&classifierQueue, &isDone, &argc, i](std::vector<cv::Mat> predictions) mutable {
 			std::string num = std::to_string(i-6);
 			if(predictions.empty()){
@@ -102,12 +98,6 @@ int main(int argc, char** argv) {
 			}
 			isDone--;
 		});
-		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-		double seconds = std::chrono::duration_cast<std::chrono::duration<double>>( t2 - t1 ).count();
-		sumj+=seconds;
-		std::cout << i << " " << j << " sec: " << seconds*1000 << "\n";
-		}
-		std::cout << "avg: " << sumj*1000/mj << "\n";
 	}
 	while(isDone>0){
 		printWithTime("Still predicting");

@@ -148,7 +148,7 @@ ClassifierQueue::Impl::add(Image image, Consumer consumer)
 	{
 		std::lock_guard<std::mutex> guard(mutex);
 		isFull=queue.size()==limit;
-		if(isFull && overwrite) {
+		if(isFull) {
 			if(overwrite){
 				deletedConsumer = queue.back().second;
 				queue.pop_back();
