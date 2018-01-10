@@ -150,7 +150,7 @@ std::pair<cv::Mat, cv::Mat> Classifier::Impl::Classify(const std::vector<cv::Mat
 					unsigned char value = (unsigned char)(((float)oi.at<float>(row,col))*255);
 					if (value > (unsigned char)maxProb.at<unsigned char>(row,col)){
 						maxProb.at<unsigned char>(row,col) = value;
-						maxClass.at<unsigned char>(row,col) = (unsigned char)i;
+						maxClass.at<unsigned char>(row,col) = (unsigned char)(i+1);
 					}
 				}
 			}

@@ -44,6 +44,7 @@ ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
+RUN ln -s "$CAFFE_ROOT/build/lib/libcaffe.so" /usr/lib/libcaffe.so
 
 #voxelhasher part
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -52,6 +53,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	libpng12-dev \
 	libglew-dev && \
     rm -rf /var/lib/apt/lists/*
+
 
 #TODO keyboard-configuration disable interactive mode
 #RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y mesa-utils nvidia-384 lightdm- libcuda1-384- nvidia-opencl-icd-384-; true ; rm -rf /var/lib/apt/lists/*

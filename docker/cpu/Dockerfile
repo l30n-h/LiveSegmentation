@@ -44,7 +44,6 @@ ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
-#WORKDIR /home/leon/Schreibtisch/nyud-fcn32s-color
-#RUN cd src && cmake . && make
+RUN ln -s "$CAFFE_ROOT/build/lib/libcaffe.so" /usr/lib/libcaffe.so
 
 
