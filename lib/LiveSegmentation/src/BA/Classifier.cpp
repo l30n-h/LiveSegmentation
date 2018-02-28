@@ -20,7 +20,7 @@ class Classifier::Impl
 		void updateThreadSpecificSettings();
 		bool usesGPU();
 		std::vector<cv::Mat> Predict(const cv::Mat& img);		
-		std::pair<cv::Mat, cv::Mat> Classify(const std::vector<cv::Mat> predictions);
+		std::pair<cv::Mat, cv::Mat> Classify(const std::vector<cv::Mat>& predictions);
 		void WrapLayer(caffe::Blob<float>* layer, std::vector<cv::Mat>* channels);
 		void Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels);
 
@@ -57,7 +57,7 @@ Classifier::~Classifier()
 	
 }
 
-std::pair<cv::Mat, cv::Mat> Classifier::Classify(const std::vector<cv::Mat> predictions) {
+std::pair<cv::Mat, cv::Mat> Classifier::Classify(const std::vector<cv::Mat>& predictions) {
 	return impl->Classify(predictions);
 }
 
@@ -136,7 +136,7 @@ std::vector<cv::Mat> Classifier::Impl::Predict(const cv::Mat& img) {
 	return output_channels;
 }
 
-std::pair<cv::Mat, cv::Mat> Classifier::Impl::Classify(const std::vector<cv::Mat> predictions) {
+std::pair<cv::Mat, cv::Mat> Classifier::Impl::Classify(const std::vector<cv::Mat>& predictions) {
 	if(predictions.size()<=0) return std::pair<cv::Mat, cv::Mat>();
 	size_t rows = predictions[0].rows;
 	size_t cols = predictions[0].cols;

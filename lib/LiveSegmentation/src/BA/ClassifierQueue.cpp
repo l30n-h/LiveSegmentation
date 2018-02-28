@@ -19,7 +19,7 @@ class ClassifierQueue::Impl
 		void start();
 		void stop();
 		void setLimit(size_t limit, bool overwrite);
-		void add(Image image, Consumer consumer);
+		void add(const Image& image, const Consumer& consumer);
 		void run();
 
 		size_t limit = 1;
@@ -84,7 +84,7 @@ ClassifierQueue::setLimit(size_t limit, bool overwrite)
 }
 
 void
-ClassifierQueue::add(Image image, Consumer consumer)
+ClassifierQueue::add(const Image& image, const Consumer& consumer)
 {
 	impl->add(image, consumer);
 }
@@ -140,7 +140,7 @@ ClassifierQueue::Impl::setLimit(size_t pLimit, bool pOverwrite)
 }
 
 void
-ClassifierQueue::Impl::add(Image image, Consumer consumer)
+ClassifierQueue::Impl::add(const Image& image, const Consumer& consumer)
 {
 	Consumer deletedConsumer;
 	bool isDeleted = false;

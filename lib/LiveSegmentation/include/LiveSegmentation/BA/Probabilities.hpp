@@ -2,26 +2,31 @@
 #define LIVESEGMENTATION_PROBABILITIES_H
 
 #include <vector>
+#include <memory>
 #include <utility>
 #include <opencv2/core/core.hpp>
 
 namespace ls {
 
 using LPPair = std::pair<unsigned int, float>;
-template <typename T> using Vector = std::vector<   T >;
 
 class Probabilities
 {
+
 	public:
 
 		Probabilities();
+
+		~Probabilities();
 		
-		void update(std::vector<cv::Mat>& predictions, unsigned int x, unsigned int y);
+		void update(const std::vector<cv::Mat>& predictions, unsigned int x, unsigned int y);
 
 		LPPair getMax();
 
+	
 	private:
-		Vector<LPPair> probabilities;
+		class Impl;
+		std::shared_ptr<Impl> impl;
 };
 
 }

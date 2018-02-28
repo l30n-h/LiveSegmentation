@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
 			std::cerr << "Unable to decode image " << file;
 			continue;
 		}
-		classifierQueue.add(img, [&classifierQueue, &isDone, &argc, i](std::vector<cv::Mat> predictions) mutable {
+		classifierQueue.add(img, [&classifierQueue, &isDone, &argc, i](const std::vector<cv::Mat>& predictions) mutable {
 			std::string num = std::to_string(i-6);
 			if(predictions.empty()){
 				printWithTime("Prediction skipped for "+num);
