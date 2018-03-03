@@ -9,7 +9,8 @@ set(LIVESEGMENTATION_VERSION "${LIVESEGMENTATION_VERSION_MAJOR}.${LIVESEGMENTATI
 
 set(CMAKE_BUILD_TYPE Release)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC -Wall -pedantic -Wextra -O3")
+message(STATUS "Building with CXX  flags : ${CMAKE_CXX_FLAGS}")
 
 set(LiveSegmentaion_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 

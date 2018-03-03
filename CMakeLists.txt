@@ -78,11 +78,11 @@ set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 
 list(APPEND HOST_FLAGS "-std=c++11")
 list(APPEND HOST_FLAGS "-Wall")
-#list(APPEND HOST_FLAGS "-pedantic")
-#list(APPEND HOST_FLAGS "-Wextra")
+list(APPEND HOST_FLAGS "-pedantic")
+list(APPEND HOST_FLAGS "-Wextra")
 #list(APPEND HOST_FLAGS "-Wconversion")          # Only add this here since thrust has problem with this
 #list(APPEND HOST_FLAGS "-Wsign-conversion")     # Only add this here since thrust has problem with this
-#list(APPEND HOST_FLAGS "-O3")
+list(APPEND HOST_FLAGS "-O3")
 message(STATUS "Created  host  flags : ${HOST_FLAGS}")
 
 
