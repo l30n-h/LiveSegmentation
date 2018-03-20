@@ -10,6 +10,7 @@
 #include <ctime>
 #include <thread>
 #include <chrono>
+#include <deque>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -73,9 +74,9 @@ int main(int argc, char** argv) {
 	ClassifierQueue classifierQueue(classifier);
 	classifierQueue.start();
 	classifierQueue.setLimit(1, true);
+	std::deque<ls::ClassifierFuture> queue;
 
 	printWithTime("Prediction started");
-	int isDone = argc-7;
 	for(int i=7;i<argc;i++){
 		std::string file = argv[i];
 		printWithTime("Read image "+file);
@@ -84,26 +85,26 @@ int main(int argc, char** argv) {
 			std::cerr << "Unable to decode image " << file;
 			continue;
 		}
-		classifierQueue.add(img, [&classifierQueue, &isDone, &argc, i](const std::vector<cv::Mat>& predictions) mutable {
-			std::string num = std::to_string(i-6);
-			if(predictions.empty()){
-				printWithTime("Prediction skipped for "+num);
-			} else{
-				printWithTime("Prediction done for "+num);
-				printWithTime("Classification started");
-				std::pair<cv::Mat, cv::Mat> result = classifierQueue.getClassifier().Classify(predictions);
-				printWithTime("Classification done");
-				cv::imwrite( "./Classes"+num+".png", result.first );
-				cv::imwrite( "./Probs"+num+".png", result.second );
-			}
-			isDone--;
-		});
+		queue.push_back(classifierQueue.add(img));
 	}
-	while(isDone>0){
-		printWithTime("Still predicting");
-		std::this_thread::sleep_for(std::chrono::seconds(10));
+	int i=1;
+	while (!queue.empty()){
+		std::string num = std::to_string(i);
+		auto future = queue.front();
+		queue.pop_front();
+		auto predictions = future.get();
+		if(!future.isValid()){
+			printWithTime("Prediction skipped for "+num);
+		}else{
+			printWithTime("Prediction done for "+num);
+			printWithTime("Classification started");
+			std::pair<cv::Mat, cv::Mat> result = classifierQueue.getClassifier().Classify(predictions);
+			printWithTime("Classification done");
+			cv::imwrite( "./Classes"+num+".png", result.first );
+			cv::imwrite( "./Probs"+num+".png", result.second );
+		}
+		i++;
 	}
 	classifierQueue.stop();
 	printWithTime("Done");
 }
-

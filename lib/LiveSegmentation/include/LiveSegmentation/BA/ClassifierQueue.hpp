@@ -5,11 +5,12 @@
 
 #include <opencv2/core/core.hpp>
 #include "Classifier.hpp"
+#include "Future.hpp"
 
 namespace ls {
 
 typedef cv::Mat Image;
-typedef std::function<void(const std::vector<Image>&)> Consumer;
+typedef Future<std::vector<Image>> ClassifierFuture;
 
 class ClassifierQueue
 {
@@ -28,7 +29,8 @@ class ClassifierQueue
 		void start();
 		void stop();
 		void setLimit(size_t limit, bool overwrite=true);
-		void add(const Image& image, const Consumer& consumer);
+		ClassifierFuture add(const Image& image);
+
 
 	private:
 		class Impl;

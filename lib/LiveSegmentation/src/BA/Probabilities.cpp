@@ -30,7 +30,7 @@ Probabilities::~Probabilities()
 }
 
 static float calcProbabilty(float lastProb, float newProb){
-	float alpha = 1.0f;
+	float alpha = 0.5f;
 	return lastProb + alpha*(newProb-lastProb);
 }
 
