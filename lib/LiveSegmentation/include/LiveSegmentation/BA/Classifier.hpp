@@ -26,6 +26,7 @@ class Classifier {
 
 		void updateThreadSpecificSettings();
 		bool usesGPU();
+		uint predictionSize();
 		std::vector<cv::Mat> Predict(const cv::Mat& img);		
 		std::pair<cv::Mat, cv::Mat> Classify(const std::vector<cv::Mat>& predictions);
 

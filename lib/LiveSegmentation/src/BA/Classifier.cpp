@@ -30,6 +30,7 @@ class Classifier::Impl
 		cv::Scalar mean_;
 		std::vector<std::string> labels_;
 		bool force_cpu_ = false;
+		uint numClasses = 0;
 };
 
 Classifier::Classifier(const Classifier& op)
@@ -69,6 +70,10 @@ bool Classifier::usesGPU(){
 	return impl->usesGPU();
 }
 
+uint Classifier::predictionSize(){
+	return impl->numClasses;
+}
+
 std::vector<cv::Mat> Classifier::Predict(const cv::Mat& img) {
 	return impl->Predict(img);
 }
@@ -99,6 +104,7 @@ Classifier::Impl::Impl(const std::string& model_file,
 
 	updateThreadSpecificSettings();
 	force_cpu_ = force_cpu;
+	numClasses = net_->output_blobs()[0]->channels();
 }
 
 Classifier::Impl::~Impl()

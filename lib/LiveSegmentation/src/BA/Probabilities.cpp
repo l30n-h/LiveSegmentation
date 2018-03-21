@@ -15,6 +15,7 @@ class Probabilities::Impl
 
 	public:
 		Vector<LPPair> probabilities;
+		int n=0;
 			
 };
 
@@ -29,14 +30,16 @@ Probabilities::~Probabilities()
 
 }
 
-static float calcProbabilty(float lastProb, float newProb){
-	float alpha = 0.5f;
-	return lastProb + alpha*(newProb-lastProb);
+static float calcProbabilty(float lastProb, float newProb, int n){
+	return (newProb+lastProb*(n-1))/n;
+	//float alpha = 0.5f;
+	//return lastProb + alpha*(newProb-lastProb);
 }
 
 
 void Probabilities::update(const std::vector<cv::Mat>& predictions, unsigned int x, unsigned int y)
 {
+	(impl->n)++;
 	if(impl->probabilities.size()==0){
 		impl->probabilities.reserve(predictions.size());
 		for(unsigned int i=0;i<predictions.size();i++){
@@ -44,7 +47,7 @@ void Probabilities::update(const std::vector<cv::Mat>& predictions, unsigned int
 		}
 	}else{
 		for(unsigned int i=0;i<predictions.size();i++){
-			impl->probabilities[i].second = calcProbabilty(impl->probabilities[i].second, predictions[i].at<float>(y, x));
+			impl->probabilities[i].second = calcProbabilty(impl->probabilities[i].second, predictions[i].at<float>(y, x), impl->n);
 		}
 	}
 }
